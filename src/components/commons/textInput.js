@@ -14,7 +14,7 @@ class FormTextInput extends Component {
                 size={30}
                 style={appStyle.inputIcon}
             />}
-            <TextInput secureTextEntry= {this.props.secureTextEntry} style={appStyle.inputTextBox} placeholder={this.props.placeholder} onChangeText={(text) => this.props.onPress(text)} />
+            <TextInput secureTextEntry= {this.props.secureTextEntry} style={appStyle.inputTextBox} value={this.props.value} placeholder={this.props.placeholder} onChangeText={(text) => this.props.onPress(text)} />
         </View>
     }
 }

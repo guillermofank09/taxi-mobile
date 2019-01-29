@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, Button, Text, AsyncStorage } from 'react-native';
 import FormTextInput from '../components/commons/textInput';
 import { appStyle } from '../styles/commons/app';
-import axios from 'axios';
-import { LAZARUS_URL } from '../utils/resources';
+import { errorStyle } from '../styles/commons/error';
+import {login} from '../services/AuthServices';
 
 class Login extends Component {
 
@@ -16,55 +16,56 @@ class Login extends Component {
         };
     }
 
+    componentWillMount(){
+        AsyncStorage.getItem('userEmail').then(
+            ()=> {
+                this.props.navigation.navigate('Home');
+            }
+        );
+
+    }
+
     render() {
         return (
             <View style={appStyle.container}>
                 <View style={appStyle.loginSection}>
                     <FormTextInput id="email" icon="mail" placeholder="Email" onPress={this.setUserEmail} />
-                    <FormTextInput id="password" icon="key" placeholder="Contraseña" onPress={this.setUserPassword} />
+                    <FormTextInput id="password" icon="key" placeholder="Contraseña" secureTextEntry onPress={this.setUserPassword} />
                 </View>
-                <View style={appStyle.buttonContainer}>
+                <View style={appStyle.loginButtonContainer}>
                     <Button title="Entrar" color="#26261b" onPress={this.login} />
+                    {this.state.error && <View style={appStyle.loginButtonContainer}>
+                    <Text style={errorStyle.errorMessage}>{this.state.error}</Text> 
                 </View>
-                <View style={appStyle.buttonContainer}>
+                }
+                </View>
+                <View style={appStyle.loginButtonContainer}>
                 <Text style={appStyle.hiperlink}
                     onPress={() => this.props.navigation.navigate('SignUp')}>
                     Registrarme
                 </Text>
                 </View>
-                {this.state.error && <View style={appStyle.buttonContainer}>
-                    <Text>{this.state.error}</Text>
-                </View>
-                }
             </View>
         );
     }
 
     setUserEmail = value => {
-        this.setState({ email: value });
+        this.setState({ email: value, error: null });
     }
 
     setUserPassword = value => {
-        this.setState({ password: value });
+        this.setState({ password: value, error: null });
     }
 
     setLoginError = (e) => {
-        this.setState({ error: 'Ops, ocurrió un error al registrar el usuario' });
+        this.setState({ error: 'Ops, ocurrió un loguear al registrar el usuario. Verifique su usuario o contraseña' });
     }
 
     login = () => {
-        const authValue = {
-            username: this.state.email,
-            password: this.state.password
-        };
-
-        const url = LAZARUS_URL + '/auth';
-        axios({
-            method: 'POST',
-            url: url, auth: authValue, data: { email: this.state.email, password: this.state.password }
-        }).then((response) => {
+        login(this.state.email, this.state.password).then((response) => {
             AsyncStorage.setItem('token', response.data.token);
-            this.props.navigation.navigate('MapScreen');
+            AsyncStorage.setItem('userEmail', this.state.email);
+            this.props.navigation.navigate('Home');
         }).catch((e) => this.setLoginError(e))
     }
 }

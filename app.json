@@ -1,4 +1,10 @@
 {
   "name": "taximobile",
-  "displayName": "taximobile"
+  "displayName": "taximobile",
+  "expo": {
+    "slug": "taximobile",
+    "name": "taximobile",
+    "sdkVersion": "31.0.0",
+    "entryPoint": "/Users/guillermofank/Repositories/taximobile/.vscode/exponentIndex.js"
+  }
 }
