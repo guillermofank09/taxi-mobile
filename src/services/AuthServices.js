@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { LAZARUS_URL } from '../utils/resources';
+import {ROLES} from '../utils/constants';
 
 export const login = (email, password) => {
     const authValue = {
@@ -18,7 +19,8 @@ export const signUp = (name, email, password) => {
     const data = {
         name: name,
         email: email,
-        password: password
+        password: password,
+        role: ROLES.USER
     };
     return axios.post(LAZARUS_URL + '/users', data);
 }

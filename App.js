@@ -5,7 +5,7 @@ import SignUp from './src/screens/signUp';
 import Login from './src/screens/login';
 import Logout from './src/screens/logout';
 import { appStyle } from './src/styles/commons/app';
-import { SafeAreaView, ScrollView, Dimensions, View, Image } from 'react-native';
+import { SafeAreaView, ScrollView, Dimensions, View, Image} from 'react-native';
 import MapScreen from './src/screens/maps';
 import ProfileScreen from './src/screens/profile';
 import ScoreScrenn from './src/screens/score';
@@ -15,6 +15,9 @@ import { Icon } from 'native-base';
 import './src/config/ReactotronConfig';
 import { Provider } from 'react-redux';
 import configureStore from './src/config/store';
+import UserImage from './src/components/commons/userImage'
+import HeaderTitle from './src/components/commons/headerTitle'
+import taxiReyHeader from './src/assets/images/header.png'
 
 const store = configureStore()
 
@@ -33,96 +36,88 @@ const { width } = Dimensions.get('window');
 
 const DrawerComponent = (props) => (
   <SafeAreaView style={{ flex: 1 }}>
-    <View style={{ height: 150, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
-      <Image source={require('./src/assets/images/user-color.png')} style={{ height: 120, width: 120, borderRadius: 60 }} />
-    </View>
+    <UserImage />
     <ScrollView>
       <DrawerItems {...props} />
     </ScrollView>
   </SafeAreaView>
 )
 
+const userDrawerNavigator = createDrawerNavigator({
+  Map: {
+    screen: MapScreen,
+    navigationOptions: {
+      headerTitle: <HeaderTitle/>,
+      headerBackTitle: null,
+      drawerIcon: ({ tintColor }) => (
+        <Icon ios='ios-home' android="md-home" style={{ fontSize: 24, color: tintColor }} />
+      )
+    }
+  },
+  Profile: {
+    screen: ProfileScreen,
+    navigationOptions: {
+      title: 'Mi Perfil',
+      headerTitleStyle: appStyle.title,
+      headerBackTitle: null,
+      drawerIcon: ({ tintColor }) => (
+        <Icon ios='ios-person' android="md-person" style={{ fontSize: 24, color: tintColor }} />
+      )
+    }
+  },
+  Score: {
+    screen: ScoreScrenn,
+    navigationOptions: {
+      title: 'Mis Kilómetros',
+      headerTitleStyle: appStyle.title,
+      headerBackTitle: null,
+      drawerIcon: ({ tintColor }) => (
+        <Icon ios='ios-star' android="md-star" style={{ fontSize: 24, color: tintColor }} />
+      )
+    }
+  },
+  Logout: {
+    screen: Logout,
+    navigationOptions: {
+      title: 'Salir',
+      headerTitleStyle: appStyle.title,
+      headerBackTitle: null,
+      drawerIcon: ({ tintColor }) => (
+        <Icon ios='ios-exit' android="mios-exit" style={{ fontSize: 24, color: tintColor }} />
+      )
+    }
+  }
+}, {
+    contentComponent: DrawerComponent,
+    drawerWidth: width,
+    contentOptions: {
+      activeTintColor: 'blue'
+    }
+  });
+
 const AppStackNavigator = createStackNavigator(
   {
     SignUp: {
       screen: SignUp,
       navigationOptions: {
-        title: 'Registro de Usuario',
-        headerTitleStyle: appStyle.title,
         headerBackTitle: null
       }
     },
     Login: {
       screen: Login,
       navigationOptions: {
-        title: 'Iniciar Sesión',
-        headerTitleStyle: appStyle.title,
         headerBackTitle: null
       }
     },
     Calification: {
       screen: Calification,
       navigationOptions: {
-        title: 'Calificación de viaje',
-        headerTitleStyle: appStyle.title,
         headerBackTitle: null
       }
     },
     Home: {
-      screen: createDrawerNavigator({
-        Map: {
-          screen: MapScreen,
-          navigationOptions: {
-            title: 'Taxy Rey',
-            headerBackTitle: null,
-            drawerIcon: ({ tintColor }) => (
-              <Icon ios='ios-home' android="md-home" style={{ fontSize: 24, color: tintColor }} />
-            )
-          }
-        },
-        Profile: {
-          screen: ProfileScreen,
-          navigationOptions: {
-            title: 'Mi Perfil',
-            headerTitleStyle: appStyle.title,
-            headerBackTitle: null,
-            drawerIcon: ({ tintColor }) => (
-              <Icon ios='ios-person' android="md-person" style={{ fontSize: 24, color: tintColor }} />
-            )
-          }
-        },
-        Score: {
-          screen: ScoreScrenn,
-          navigationOptions: {
-            title: 'Mis Kilómetros',
-            headerTitleStyle: appStyle.title,
-            headerBackTitle: null,
-            drawerIcon: ({ tintColor }) => (
-              <Icon ios='ios-star' android="md-star" style={{ fontSize: 24, color: tintColor }} />
-            )
-          }
-        },
-        Logout: {
-          screen: Logout,
-          navigationOptions: {
-            title: 'Salir',
-            headerTitleStyle: appStyle.title,
-            headerBackTitle: null,
-            drawerIcon: ({ tintColor }) => (
-              <Icon ios='ios-exit' android="mios-exit" style={{ fontSize: 24, color: tintColor }} />
-            )
-          }
-        }
-      }, {
-          contentComponent: DrawerComponent,
-          drawerWidth: width,
-          contentOptions: {
-            activeTintColor: 'blue'
-          }
-        }),
+      screen: userDrawerNavigator,
       navigationOptions: ({ navigation }) => ({
-        title: 'Taxi Rey',
-        headerTitleStyle: appStyle.title,
         headerLeft: <Icon ios='ios-menu' android="md-menu" style={appStyle.menuButton} onPress={() => navigation.openDrawer()} />,
         headerRight: <View />
       })
@@ -131,10 +126,14 @@ const AppStackNavigator = createStackNavigator(
     TripConfirmation : {
       screen: TripConfirmation,
       navigationOptions: {
-        title: 'Información del Viaje',
-        headerTitleStyle: appStyle.title,
-        headerBackTitle: 'Mapa'
+        headerBackTitle: null
       }
     }
-  }
-);
+  },{
+    navigationOptions: {
+      headerBackground: (
+        <SafeAreaView><Image source={taxiReyHeader} style={{alignSelf: 'center'}} /></SafeAreaView>
+      ),
+      headerTitleStyle: { color: '#fff' },
+    }
+  });

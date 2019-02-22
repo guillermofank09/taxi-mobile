@@ -14,18 +14,21 @@ export const appStyle = StyleSheet.create({
         flexDirection: 'column'
     },
     signUpSection: {
+        marginTop: 30,
         flex: .6,
         flexDirection: 'column'
     },
     profileSection: {
         marginTop: 30,
-        flex: .3,
+        flex: .70,
         flexDirection: 'column',
         justifyContent: 'center'
     },
     loginSection: {
         flex: .5,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     input: {
         padding: 10,
@@ -34,9 +37,14 @@ export const appStyle = StyleSheet.create({
         alignItems: 'center',
         height: 20
     },
+    formInput: {
+        width: '90%',
+        alignSelf: 'center',
+        flex: 0.25,
+        marginTop: 40
+    },
     inputIcon: {
-        flexDirection: 'column',
-        flex: .2
+        marginRight: 10
     },
     inputTextBox: {
         flexDirection: 'column',
@@ -49,19 +57,38 @@ export const appStyle = StyleSheet.create({
         alignItems: 'center'
     },
     buttonContainer: {
-        flex: .15,
+        flex: .20,
+        flexDirection: 'column'
+    },
+    loginContainer: {
+        flex: .35,
         flexDirection: 'column'
     },
     loginButtonContainer: {
-        flex: .25,
+        flex: .50,
         flexDirection: 'column'
     },
+    errorContainer: {
+        flex: .20,
+        flexDirection: 'column'
+    },
+    registerButtonContainer: {
+        flex: .15,
+        flexDirection: 'column'
+    },
+    socialButtonsContainer: {
+        marginTop: 30,
+        flex: .50,
+        flexDirection: 'column',
+        alignContent: 'flex-end',
+        justifyContent: 'flex-end'
+    },
     integrationContainer: {
+        marginTop: 30,
         flex: .25,
         flexDirection: 'column'
     },
     integrateWith: {
-        flex: .20,
         flexDirection: 'column',
         justifyContent: 'center',
         textAlign: 'center',
@@ -75,15 +102,16 @@ export const appStyle = StyleSheet.create({
         marginBottom: 40
     },
     socialContainer: {
-        flex: .8,
         flexDirection: 'row',
         justifyContent: 'center',
         height: 100
     },
     socialButton: {
-        flexDirection: 'column',
+        height: 40,
+        margin: 20,
+        flexDirection: 'row',
         justifyContent: 'center',
-        flex: .2
+        alignItems: 'center'
     },
     map: {
         left: 0,
@@ -117,11 +145,9 @@ export const appStyle = StyleSheet.create({
     tripInfo: {
         flex: 0.1,
         justifyContent: 'center',
-        justifyContent: 'center',
-        justifyContent: 'center',
         backgroundColor: 'white',
-        paddingTop:10,
-        paddingBottom:10,
+        paddingTop: 10,
+        paddingBottom: 10,
         margin: 20,
         borderColor: 'black',
         borderWidth: 1
@@ -155,21 +181,48 @@ export const appStyle = StyleSheet.create({
         textAlign: 'center'
     },
     actionButon: {
-        flex: 0.1,
-        backgroundColor: '#E9CE26', 
-        justifyContent: 'center', 
-        margin: 50,
+        alignItems: 'center',
+        marginTop: 40,
+        backgroundColor: '#E9CE26',
+        marginLeft: 50,
+        marginRight: 50,
         borderColor: 'black',
-        borderRadius:10,
+        paddingBottom: 15,
+        paddingTop: 15,
+        color: 'black',
+        borderRadius: 10,
+        borderWidth: 1,
+    },
+    tripConfirmationCancel: {
+        height: 50,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+        marginLeft: 50,
+        marginTop: 20,
+        marginRight: 50,
+        borderColor: 'black',
+        borderRadius: 10,
+        borderWidth: 1
+    },
+    tripConfirmationContinue: {
+        height: 50,
+        backgroundColor: '#E9CE26',
+        justifyContent: 'center',
+        marginLeft: 50,
+        marginTop: 20,
+        marginRight: 50,
+        borderColor: 'black',
+        borderRadius: 10,
         borderWidth: 1
     },
     cancelButton: {
-        flex: 0.1,
+        height: 50,
+        marginTop: 20,
         justifyContent: 'center',
         backgroundColor: 'black',
-        margin:50,
+        margin: 50,
         borderColor: 'black',
-        borderRadius:10,
+        borderRadius: 10,
         borderWidth: 1
     },
     scoreScreen: {
@@ -177,6 +230,10 @@ export const appStyle = StyleSheet.create({
         justifyContent: 'center',
         textAlign: 'center',
         margin: 30
+    },
+    perfilPicture: {
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 
 })

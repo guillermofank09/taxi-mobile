@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, Button } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import { appStyle } from '../styles/commons/app';
 import MapView, { Marker } from 'react-native-maps';
@@ -15,8 +15,10 @@ import { getDistance } from '../services/LocationService';
 import taxiMarker from '../assets/images/taxi-color.png';
 import destinyMarker from '../assets/images/indicador-color-negro.png';
 import crownMarker from '../assets/images/corona-color.png';
-import {setTrip} from '../actions/tripActions'
+import { setTrip } from '../actions/tripActions'
 import { connect } from 'react-redux';
+import { AsyncStorage } from 'react-native';
+import { isUser } from '../helpers/sessionHelper'
 
 Geocoder.init(GOOGLE_MAPS_API_KEY);
 
@@ -34,7 +36,8 @@ class MapScreen extends Component {
             from: '',
             to: '',
             showFromAutocompleteList: false,
-            showToAutocompleteList: false
+            showToAutocompleteList: false,
+            userRole: 'USER'
         }
     }
 
@@ -45,6 +48,7 @@ class MapScreen extends Component {
     componentDidMount() {
         requestGeolocationPermission();
         this.getCurrentPosition();
+        AsyncStorage.getItem('userRole').then((value) => this.setState({ userRole: value }));
     }
 
     render() {
@@ -118,82 +122,87 @@ class MapScreen extends Component {
                                 style={{ width: 30, height: 30 }} />
                         </Marker>
                     </MapView>
-                    <View>
-                        <GooglePlacesAutocomplete
-                            ref="fromLocation"
-                            placeholder='Inicio de viaje...'
-                            minLength={3}
-                            debounce={300}
-                            returnKeyType={'search'}
-                            listViewDisplayed={this.state.showFromAutocompleteList}
-                            currentLocationLabel='Mi Ubicación'
-                            currentLocation={true}
-                            nearbyPlacesAPI="GoogleReverseGeocoding"
-                            fetchDetails={true}
-                            onPress={this.selectFromDestination}
-                            renderRigthButton={() => <Text style={{ marginTop: 12, marginLeft: 16, fontSize: 18 }}> Location </Text>}
-                            textInputProps={{
-                                onChange: (text) => {
-                                    const showList = text && text.nativeEvent.text.length > 2;
-                                    this.setState({ showFromAutocompleteList: showList })
-                                },
-                                onBlur: () => this.setState({ showFromAutocompleteList: false }),
-                            }}
-                            query={{
-                                key: GOOGLE_MAPS_API_KEY,
-                                language: 'es',
-                                components: 'country:arg'
-                            }}
+                    {isUser(this.state.userRole) && (
+                        <>
+                            <View>
+                                <GooglePlacesAutocomplete
+                                    ref="fromLocation"
+                                    placeholder='Inicio de viaje...'
+                                    minLength={3}
+                                    debounce={300}
+                                    returnKeyType={'search'}
+                                    listViewDisplayed={this.state.showFromAutocompleteList}
+                                    currentLocationLabel='Mi Ubicación'
+                                    currentLocation={true}
+                                    nearbyPlacesAPI="GoogleReverseGeocoding"
+                                    fetchDetails={true}
+                                    onPress={this.selectFromDestination}
+                                    renderRigthButton={() => <Text style={{ marginTop: 12, marginLeft: 16, fontSize: 18 }}> Location </Text>}
+                                    textInputProps={{
+                                        onChange: (text) => {
+                                            const showList = text && text.nativeEvent.text.length > 2;
+                                            this.setState({ showFromAutocompleteList: showList })
+                                        },
+                                        onBlur: () => this.setState({ showFromAutocompleteList: false }),
+                                    }}
+                                    query={{
+                                        key: GOOGLE_MAPS_API_KEY,
+                                        language: 'es',
+                                        components: 'country:arg'
+                                    }}
 
-                            styles={{
-                                textInputContainer: {
-                                    width: '100%',
-                                    backgroundColor: '#FFF'
-                                },
-                                listView: {
-                                    backgroundColor: '#FFF',
-                                    position: 'absolute',
-                                    top: 40,
-                                }
-                            }}
-                            enablePoweredByContainer={false}
-                        />
-                    </View>
-                    {!this.state.showFromAutocompleteList && <View style={{ marginTop: 50 }}>
-                        <GooglePlacesAutocomplete
-                            ref="tolocation"
-                            placeholder='Destino de viaje...'
-                            minLength={3}
-                            debounce={300}
-                            returnKeyType={'search'}
-                            listViewDisplayed={this.state.showToAutocompleteList}
-                            fetchDetails={true}
-                            onPress={this.selectToDestination}
-                            textInputProps={{
-                                onFocus: () => this.setState({ showToAutocompleteList: true }),
-                                onBlur: () => this.setState({ showToAutocompleteList: false }),
-                            }}
-                            query={{
-                                key: GOOGLE_MAPS_API_KEY,
-                                language: 'es',
-                                components: 'country:arg'
-                            }}
+                                    styles={{
+                                        textInputContainer: {
+                                            width: '100%',
+                                            backgroundColor: '#FFF'
+                                        },
+                                        listView: {
+                                            backgroundColor: '#FFF',
+                                            position: 'absolute',
+                                            top: 40,
+                                        }
+                                    }}
+                                    enablePoweredByContainer={false}
+                                />
+                            </View>
+                            {!this.state.showFromAutocompleteList && <View style={{ marginTop: 50 }}>
+                                <GooglePlacesAutocomplete
+                                    ref="tolocation"
+                                    placeholder='Destino de viaje...'
+                                    minLength={3}
+                                    debounce={300}
+                                    returnKeyType={'search'}
+                                    listViewDisplayed={this.state.showToAutocompleteList}
+                                    fetchDetails={true}
+                                    onPress={this.selectToDestination}
+                                    textInputProps={{
+                                        onFocus: () => this.setState({ showToAutocompleteList: true }),
+                                        onBlur: () => this.setState({ showToAutocompleteList: false }),
+                                    }}
+                                    query={{
+                                        key: GOOGLE_MAPS_API_KEY,
+                                        language: 'es',
+                                        components: 'country:arg'
+                                    }}
 
-                            styles={{
-                                textInputContainer: {
-                                    width: '100%',
-                                    backgroundColor: '#FFF',
-                                    zIndex: 0
-                                },
-                                listView: {
-                                    backgroundColor: '#FFF',
-                                    position: 'absolute',
-                                    top: 40,
-                                }
-                            }}
-                            enablePoweredByContainer={false}
-                        />
-                    </View>
+                                    styles={{
+                                        textInputContainer: {
+                                            width: '100%',
+                                            backgroundColor: '#FFF',
+                                            zIndex: 0
+                                        },
+                                        listView: {
+                                            backgroundColor: '#FFF',
+                                            position: 'absolute',
+                                            top: 40,
+                                        }
+                                    }}
+                                    enablePoweredByContainer={false}
+                                />
+                            </View>
+                            }
+                        </>
+                    )
                     }
                     {this.state.trip && this.state.trip.startLocation && this.state.trip.endLocation &&
                         <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 50 }} >
@@ -210,11 +219,13 @@ class MapScreen extends Component {
                                     </View>
                                 </View>
                             }
-                            <View style={appStyle.actionButon}>
-                                <Button
-                                    title="SOLICITAR"
-                                    color='black'
-                                    onPress={() => { this.props.add(this.state.trip); this.props.navigation.navigate('TripConfirmation') }} />
+                            <View>
+                                <TouchableOpacity
+                                    style={appStyle.actionButon}
+                                    onPress={this.confirmTrip}
+                                >
+                                    <Text> SOLICITAR</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     }
@@ -225,6 +236,11 @@ class MapScreen extends Component {
 
     gobackToMap = () => {
         this.setState({ showTripModal: false });
+    }
+
+    confirmTrip = () => {
+        this.props.add && this.props.add(this.state.trip);
+        this.props.navigation.navigate('TripConfirmation')
     }
 
     selectFromDestination = (data, details = null) => {
