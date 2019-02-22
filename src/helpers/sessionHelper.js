@@ -1,5 +1,6 @@
 
 import { AsyncStorage } from 'react-native';
+import {ROLES} from '../utils/constants'
 
 export const validateSession = () => {
         AsyncStorage.getItem('token').then((value) => {
@@ -20,4 +21,8 @@ export const validateSession = () => {
                   isLoaded: true
               });
          });
+}
+
+export const isUser = (role) => {
+        return ROLES.USER === role
 }

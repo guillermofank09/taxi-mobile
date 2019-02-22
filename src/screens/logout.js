@@ -1,18 +1,21 @@
-import { Component } from 'react';
-import { AsyncStorage } from 'react-native';
+import React from 'react';
+import { AsyncStorage, ActivityIndicator } from 'react-native';
 
-class Logout extends Component {
+class Logout extends React.Component {
 
     constructor(props) {
         super(props);
     }
 
     render() {
-        return null;
+        return <ActivityIndicator size="large" color="#26261b" style={{ marginTop: 60 }} />
     }
 
-    componentWillMount(){
-        AsyncStorage.clear().then(()=> this.props.navigation.navigate('Login'));
+    componentDidMount() {
+        AsyncStorage.removeItem('token').then(() => this.props.navigation.navigate('Login'))
+            .catch((error) => {
+                console.error('Error trying to remove token: ' + error)
+            });
     }
 }
 

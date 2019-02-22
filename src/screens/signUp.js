@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { View, Button, Text, AsyncStorage } from 'react-native';
+import { View, Text, TouchableOpacity, AsyncStorage, ScrollView } from 'react-native';
 import FormTextInput from '../components/commons/textInput';
 import { appStyle } from '../styles/commons/app';
 import { errorStyle } from '../styles/commons/error';
 import SocialButtons from '../components/commons/socialButtons';
 import WelcomeScreen from './welcome';
-import {signUp, login} from '../services/AuthServices';
+import { signUp, login } from '../services/AuthServices';
+import { Formik } from 'formik';
+import { signUpSchema } from '../helpers/validationSchema';
+import HeaderTitle from '../components/commons/headerTitle'
+
+export const initialValues = { name: '', email: '', password: '', confirmPassword: '' }
 
 class SignUp extends Component {
 
@@ -21,34 +26,55 @@ class SignUp extends Component {
     }
 
     componentDidMount() {
-        setTimeout(() => {this.finishLoading()}, 4000);
+        setTimeout(() => { this.finishLoading() }, 4000);
     }
 
     render() {
         return (
             this.state.isReady ?
-            <View style={appStyle.container} >
-                <View style={appStyle.signUpSection}>
-                    <FormTextInput id="name" icon="person" placeholder="Nombre" onPress={this.setUserName} />
-                    <FormTextInput id="email" icon="mail" placeholder="Email" onPress={this.setUserEmail} />
-                    <FormTextInput id="password" icon="key" placeholder="Contraseña" secureTextEntry onPress={this.setUserPassword} />
-                </View>
-                <View style={appStyle.buttonContainer}>
-                    <Button title="Continuar" color="#26261b" onPress={this.signUp} />
-                    {this.state.error && <View style={appStyle.buttonContainer}>
-                    <Text style={errorStyle.errorMessage}>{this.state.error}</Text>
-                </View>
-                }
-                </View>
-                <View style={appStyle.integrationContainer}>
-                    <Text  style={appStyle.existingAccount} onPress={()=> this.props.navigation.navigate('Login')}>Ya tengo una cuenta</Text>
-                    <Text style={appStyle.integrateWith}>Integrarse con: </Text>
-                    <SocialButtons />
-                </View>
-            </View>
-            : 
-            <WelcomeScreen />
+                <ScrollView keyboardDismissMode='on-drag' style={appStyle.container} >
+                    <HeaderTitle />
+                    <Formik initialValues={initialValues} onSubmit={this.onSubmit} validationSchema={signUpSchema}
+                        render={({ values, handleSubmit, setFieldValue, errors, touched, setFieldTouched, isValid }) => (
+                            <>
+                                <View style={appStyle.signUpSection}>
+                                    <FormTextInput name="name" icon="person" placeholder="Nombre" value={values.name} onChange={setFieldValue} error={touched.name && errors.name} onTouch={setFieldTouched} />
+                                    <FormTextInput name="email" icon="mail" placeholder="Email" value={values.email} onChange={setFieldValue} error={touched.email && errors.email} onTouch={setFieldTouched} />
+                                    <FormTextInput name="password" icon="key" secure type='password' placeholder="Contraseña" value={values.password} onChange={setFieldValue} error={touched.password && errors.password} onTouch={setFieldTouched} />
+                                    <FormTextInput name="confirmPassword" icon="key" secure type='password' placeholder="Confirme Contraseña" value={values.confirmPassword} onChange={setFieldValue} error={touched.confirmPassword && errors.confirmPassword} onTouch={setFieldTouched} />
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        style={appStyle.actionButon}
+                                        onPress={handleSubmit}
+                                    >
+                                        <Text> CONTINUAR</Text>
+                                    </TouchableOpacity>
+                                    {this.state.error &&
+                                        <View style={appStyle.buttonContainer}>
+                                            <Text style={errorStyle.errorMessage}>{this.state.error}</Text>
+                                        </View>
+                                    }
+                                </View>
+                                <View style={appStyle.integrationContainer}>
+                                    <Text style={appStyle.existingAccount} onPress={() => this.props.navigation.navigate('Login')}>Ya tengo una cuenta</Text>
+                                    <Text style={appStyle.integrateWith}>Integrarse con: </Text>
+                                    <SocialButtons />
+                                </View>
+                            </>
+                        )
+                        } />
+                </ScrollView>
+                :
+                <WelcomeScreen />
         );
+    }
+
+    onSubmit = (values) => {
+        let params = Object.assign({}, values);
+        delete params.confirmPassword
+        this.signUp(params);
+
     }
 
     validate = (text) => {
@@ -56,42 +82,25 @@ class SignUp extends Component {
         return reg.test(text) === true;
     }
 
-    setMailError = () => {
-        this.setState({error: 'Mail incorrecto. Por favor ingrese un mail válido.'});
-    }
-
-    setUserName = value => {
-        this.setState({ name: value });
-    }
-    setUserEmail = value => {
-        this.setState({ email: value });
-    }
-    setUserPassword = value => {
-        this.setState({ password: value });
-    }
-
     setError = e => {
-        this.setState({ error: 'Ops, ocurrió un error al registrar el usuario'});
+        this.setState({ error: 'Ops, ocurrió un error al registrar el usuario' });
     }
 
-    finishLoading () {
-        this.setState({isReady: true});
+    finishLoading() {
+        this.setState({ isReady: true });
     }
 
-    signUp = () => {
-        if(this.validate(this.state.email)){
-        signUp(this.state.name, this.state.email, this.state.password).then(() => {
+    signUp = (values) => {
+        signUp(values.name, values.email, values.password).then(() => {
             AsyncStorage.setItem('userName', this.state.name);
-            login(this.state.email, this.state.password).then((response) => {
+            login(values.email, values.password).then((response) => {
                 AsyncStorage.setItem('token', response.data.token);
-                AsyncStorage.setItem('userName', this.state.name);
-                AsyncStorage.setItem('userEmail', this.state.email);
+                AsyncStorage.setItem('userName', values.name);
+                AsyncStorage.setItem('userEmail', values.email);
+                AsyncStorage.setItem('userRole', response.data.user && response.data.user.role[0]);
                 this.props.navigation.navigate('Home');
             }).catch((e) => this.setError(e))
         }).catch((e) => this.setError(e))
-    } else {
-        this.setMailError;
-    }
     }
 }
 

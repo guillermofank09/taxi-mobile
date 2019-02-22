@@ -5,3 +5,9 @@ export const DEFAULT_REGION_POSADAS = {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 };
+
+export const ROLES = {
+    ADMIN: 'ADMIN',
+    DRIVER: 'DRIVER',
+    USER: 'USER'
+}

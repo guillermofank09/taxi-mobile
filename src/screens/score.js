@@ -3,6 +3,7 @@ import { View, Image, Text, Button } from 'react-native';
 import { appStyle } from '../styles/commons/app';
 import { getUserScore } from '../services/UserService';
 import { getArrivalHour } from '../helpers/systemHelper';
+import NotFound from '../components/commons/notFound'
 import { AsyncStorage } from 'react-native';
 
 class Score extends Component {
@@ -32,7 +33,7 @@ class Score extends Component {
                 :
                 <View style={appStyle.tripDetailsInfo}>
                     <View style={appStyle.scoreScreen}>
-                        <Text> Ops, todavía no tienes viajes registrados</Text>
+                    <NotFound message='Ops, todavía no tienes viajes registrados'/>
                     </View>
                 </View>
             }
